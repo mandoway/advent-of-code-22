@@ -1,13 +1,13 @@
 fun main() {
     fun sumBuckets(input: List<String>): List<Int> {
-        var sum1 = 0
-        return input.fold(emptyList<Int>()) { acc, s ->
+        var sum = 0
+        return input.fold(emptyList()) { acc, s ->
             if (s.isBlank()) {
-                (acc + sum1).also {
-                    sum1 = 0
+                (acc + sum).also {
+                    sum = 0
                 }
             } else {
-                sum1 += s.toInt()
+                sum += s.toInt()
                 acc
             }
         }
