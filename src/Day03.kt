@@ -4,9 +4,7 @@ fun main() {
     }
 
     fun intersectRucksack(first: String, second: String): Set<Char> {
-        return first.toCharArray().toSet().intersect(
-            second.toCharArray().toSet()
-        )
+        return first.toSet() intersect second.toSet()
     }
 
     fun Char.toPriority() = if (isLowerCase()) {
