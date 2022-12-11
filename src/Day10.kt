@@ -5,10 +5,9 @@ fun String.completionTime() = when (this) {
     else -> 2
 }
 
-fun retrieveSignalStrengths(commands: List<String>): Int {
+fun runSimulation(commands: List<String>, onEachCycle: (cycle: Int, registerValue: Int) -> Unit) {
     var cycle = 0
     var registerValue = 1
-    var totalSignalStrength = 0
 
     commands.forEach { cmd ->
         val cyclesToComplete = cmd.completionTime()
@@ -22,15 +21,40 @@ fun retrieveSignalStrengths(commands: List<String>): Int {
         repeat(cyclesToComplete) {
             cycle++
 
-            if (shouldCheckSignalStrength(cycle)) {
-                totalSignalStrength += cycle * registerValue
-            }
+            onEachCycle(cycle, registerValue)
         }
 
         registerValue += addParam
     }
+}
+
+fun retrieveSignalStrengths(commands: List<String>): Int {
+    var totalSignalStrength = 0
+
+    runSimulation(commands) { cycle, registerValue ->
+        if (shouldCheckSignalStrength(cycle)) {
+            totalSignalStrength += cycle * registerValue
+        }
+    }
 
     return totalSignalStrength
+}
+
+fun drawCRTScreen(commands: List<String>) {
+    val pixels = mutableListOf<Char>()
+
+    runSimulation(commands) { _, registerValue ->
+        val nextPixel = if (pixels.size % 40 in registerValue - 1..registerValue + 1) {
+            '#'
+        } else {
+            '.'
+        }
+
+        pixels.add(nextPixel)
+    }
+
+    pixels.chunked(40)
+        .forEach { println(it.joinToString("")) }
 }
 
 fun main() {
@@ -38,8 +62,8 @@ fun main() {
         return retrieveSignalStrengths(input)
     }
 
-    fun part2(input: List<String>): Int {
-        return input.size
+    fun part2(input: List<String>) {
+        drawCRTScreen(input)
     }
 
     // test if implementation meets criteria from the description, like:
@@ -48,5 +72,5 @@ fun main() {
 
     val input = readInput("Day10")
     println(part1(input))
-    println(part2(input))
+    part2(input)
 }
